@@ -1,67 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Video Player</title>
-  <link rel="stylesheet" href="assets/css/plyr.css" />
-  <link rel="stylesheet" href="assets/css/style.css" />
-</head>
-<body>
-  <header>
-    <h1 id="video-title">Loading...</h1>
-  </header>
+<div id="player-container"></div>
 
-  <main>
-    <div class="player-wrapper">
-      <video id="player" playsinline controls></video>
-    </div>
+<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+<script>
+  function getQueryParams() {
+    const params = {};
+    location.search.substring(1).split("&").forEach(pairStr => {
+      const pair = pairStr.split("=");
+      if(pair[0]) {
+        params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
+      }
+    });
+    return params;
+  }
 
-    <p id="video-desc"></p>
+  const params = getQueryParams();
+  const playerContainer = document.getElementById('player-container');
 
-    <p><a href="index.html" class="back-link">← Back to Home</a></p>
-  </main>
+  if(params.video) {
+    const videoUrl = params.video;
 
-  <footer>
-    <p>© 2024 My Video Gallery</p>
-  </footer>
+    // Extract YouTube video ID from different YouTube URL formats
+    const ytRegex = /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = videoUrl.match(ytRegex);
 
-  <script src="assets/js/plyr.min.js"></script>
-  <script src="assets/js/script.js"></script>
-  <script>
-    // Parse URL params and update page content
-    function getQueryParams() {
-      const params = {};
-      location.search.substring(1).split("&").forEach(pairStr => {
-        const pair = pairStr.split("=");
-        if(pair[0]) {
-          params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
-        }
-      });
-      return params;
-    }
-
-    const params = getQueryParams();
-    const player = new Plyr('#player');
-
-    if(params.video) {
+    if(match) {
+      const videoId = match[1];
+      playerContainer.innerHTML = `
+        <div class="plyr__video-embed" id="youtube-player">
+          <iframe
+            src="https://www.youtube.com/embed/${videoId}?si=OwXMS2pOmZx_l0di&origin=${location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1"
+            allowfullscreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            frameborder="0"
+            referrerpolicy="strict-origin-when-cross-origin"
+          ></iframe>
+        </div>
+      `;
+      const player = new Plyr('#youtube-player');
+    } else {
+      // Fallback for MP4 videos
+      playerContainer.innerHTML = `<video id="player" playsinline controls></video>`;
+      const player = new Plyr('#player');
       const videoEl = document.getElementById('player');
-      videoEl.src = params.video;
+      videoEl.src = videoUrl;
       videoEl.type = 'video/mp4';
     }
-
-    if(params.title) {
-      document.getElementById('video-title').textContent = params.title;
-      document.title = params.title + " - My Video Gallery";
-    } else {
-      document.getElementById('video-title').textContent = "Video Player";
-    }
-
-    if(params.desc) {
-      document.getElementById('video-desc').textContent = params.desc;
-    } else {
-      document.getElementById('video-desc').textContent = "";
-    }
-  </script>
-</body>
-</html>
+  } else {
+    playerContainer.innerHTML = "<p>No video URL provided.</p>";
+  }
+</script>
