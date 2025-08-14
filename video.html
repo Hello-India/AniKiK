@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Video Player</title>
+  <link rel="stylesheet" href="assets/css/plyr.css" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <header>
+    <h1 id="video-title">Loading...</h1>
+  </header>
+
+  <main>
+    <div class="player-wrapper">
+      <video id="player" playsinline controls></video>
+    </div>
+
+    <p id="video-desc"></p>
+
+    <p><a href="index.html" class="back-link">← Back to Home</a></p>
+  </main>
+
+  <footer>
+    <p>© 2024 My Video Gallery</p>
+  </footer>
+
+  <script src="assets/js/plyr.min.js"></script>
+  <script src="assets/js/script.js"></script>
+  <script>
+    // Parse URL params and update page content
+    function getQueryParams() {
+      const params = {};
+      location.search.substring(1).split("&").forEach(pairStr => {
+        const pair = pairStr.split("=");
+        if(pair[0]) {
+          params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
+        }
+      });
+      return params;
+    }
+
+    const params = getQueryParams();
+    const player = new Plyr('#player');
+
+    if(params.video) {
+      const videoEl = document.getElementById('player');
+      videoEl.src = params.video;
+      videoEl.type = 'video/mp4';
+    }
+
+    if(params.title) {
+      document.getElementById('video-title').textContent = params.title;
+      document.title = params.title + " - My Video Gallery";
+    } else {
+      document.getElementById('video-title').textContent = "Video Player";
+    }
+
+    if(params.desc) {
+      document.getElementById('video-desc').textContent = params.desc;
+    } else {
+      document.getElementById('video-desc').textContent = "";
+    }
+  </script>
+</body>
+</html>
