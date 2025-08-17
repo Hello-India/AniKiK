@@ -3,39 +3,189 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>My Video Gallery</title>
+  <title>My Premium Video Gallery</title>
+  
+  <!-- Plyr CSS for video player -->
   <link rel="stylesheet" href="assets/css/plyr.css" />
-  <link rel="stylesheet" href="assets/css/style.css" />
+  
+  <!-- Custom CSS -->
+  <style>
+    /* Reset & base */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0; 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #121212;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background: #1f1f1f;
+      padding: 1.5rem 2rem;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.7);
+    }
+    header h1 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 2.2rem;
+      letter-spacing: 1px;
+      color: #00bcd4;
+    }
+    main {
+      flex-grow: 1;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    /* Video grid */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+    .video-item {
+      background: #222;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .video-item:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 25px rgba(0,188,212,0.7);
+    }
+    .video-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      display: block;
+    }
+    .video-info {
+      padding: 1rem;
+      flex-grow: 1;
+    }
+    .video-info h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #00bcd4;
+    }
+    .video-info p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+    /* Player container */
+    .player-wrapper {
+      margin-top: 3rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      background: #222;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.7);
+      padding: 1rem;
+    }
+    footer {
+      background: #1f1f1f;
+      text-align: center;
+      color: #777;
+      padding: 1rem 0;
+      font-size: 0.9rem;
+      margin-top: auto;
+    }
+    @media (max-width: 480px) {
+      header h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <header>
-    <h1>My Video Gallery</h1>
+    <h1>My Premium Video Gallery</h1>
   </header>
 
   <main>
     <div class="video-grid">
-        <a href="video.html?title=Example%20YouTube%20Video&desc=This%20is%20a%20YouTube%20video%20example.&video=https%3A%2F%2Fyoutu.be%2FIkcVGowqOok%3Fsi%3DRWHlnL0QOWSBPhuS&thumb=assets%2Fimages%2FAniS.jpg" class="video-item">
-  <img src="assets/images/AniS.jpg" alt="Example YouTube Video Thumbnail" />
-  <h2>First TRy VId</h2>
-</a>
-<video controls width="640">
-  <source src="https://sttrmgbbts-3105eee3f453.herokuapp.com/AgADxR253731/Relations_%26_Functions_01_Power_Set_Five_Different_Operations_on.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+      <!-- Video Item 1 -->
+      <a href="#player" class="video-item" data-title="Relations & Functions" data-desc="Power set and five different operations on relations and functions" data-video="https://sttrmgbbts-3105eee3f453.herokuapp.com/AgADxR253731/Relations_%26_Functions_01_Power_Set_Five_Different_Operations_on.mp4" data-thumb="assets/images/AniS.jpg">
+        <img src="assets/images/AniS.jpg" alt="Relations & Functions Thumbnail" class="video-thumb" />
+        <div class="video-info">
+          <h2>Relations & Functions</h2>
+          <p>Power set and operations on relations</p>
+        </div>
+      </a>
 
-      <!-- Add more videos here in the same format -->
-      <!--
-        Format:
-        <a href="video.html?title=Video%20Title&desc=Short%20Description&video=VIDEO_MP4_URL&thumb=THUMBNAIL_URL" class="video-item">
-          <img src="THUMBNAIL_URL" alt="Video Title Thumbnail" />
-          <h2>Video Title</h2>
-        </a>
-      -->
+      <!-- Add more video items similarly -->
+    </div>
+
+    <div class="player-wrapper" id="player-wrapper" style="display:none;">
+      <video id="player" playsinline controls crossorigin>
+        <source src="" type="video/mp4" />
+        Your browser does not support HTML5 video.
+      </video>
+      <h2 id="player-title" style="color: #00bcd4; margin: 0.5rem 0 0;"></h2>
+      <p id="player-desc" style="color: #ccc; margin-top: 0.25rem;"></p>
     </div>
   </main>
 
   <footer>
     <p>© 2024 My Video Gallery</p>
   </footer>
+
+  <!-- Plyr.js library -->
+  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+  <script>
+    // Initialize Plyr player
+    const player = new Plyr('#player');
+
+    // Get DOM elements
+    const videoItems = document.querySelectorAll('.video-item');
+    const playerWrapper = document.getElementById('player-wrapper');
+    const playerTitle = document.getElementById('player-title');
+    const playerDesc = document.getElementById('player-desc');
+    const playerVideo = document.getElementById('player');
+
+    // Function to load and play video
+    function loadVideo(videoUrl, title, desc) {
+      player.source = {
+        type: 'video',
+        sources: [
+          {
+            src: videoUrl,
+            type: 'video/mp4',
+          },
+        ],
+      };
+      playerTitle.textContent = title;
+      playerDesc.textContent = desc;
+      playerWrapper.style.display = 'block';
+      player.play();
+      // Scroll to player smoothly
+      playerWrapper.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Add click listeners to video items
+    videoItems.forEach(item => {
+      item.addEventListener('click', e => {
+        e.preventDefault();
+        const videoUrl = item.getAttribute('data-video');
+        const title = item.getAttribute('data-title');
+        const desc = item.getAttribute('data-desc');
+        loadVideo(videoUrl, title, desc);
+      });
+    });
+  </script>
 </body>
 </html>
